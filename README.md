@@ -18,6 +18,35 @@ Dependencies
 
 Depends on ansible-consul role if consul-template needs to talk to a local Consul server.
 
+Config
+------------
+If you need to add your own .cfg files for your templates (such as an nginx site conf), just put them in {{ consul_template_home }}/config/ and consul-template will merge everything in that directory into one config file.
+
+Example: 
+```
+# This tells consul-template where to find and put the nginx template
+template: src=nginx.cfg.j2 dest={{ consul_template_home }}/config/nginx.cfg
+
+# This is the nginx consul-template template. Note that we are not using an Ansible 'template' for this as we don't want it interpreting the double curly brackets in the file because that is what consul-template uses
+copy: src=files/nginx-sites.conf dest={{ consul_template_home }}/templates/nginx-sites.conf
+```
+templates/nginx.cfg.j2
+```
+template {
+  source = "{{ consul_template_home }}/config/nginx.cfg"
+  destination = "/etc/nginx/conf.d/upstreams.conf"
+  command = "service nginx reload"
+}
+```
+files/nginx-sites.conf
+```
+upstream app {
+  least_conn;
+  {{range service "production.app"}}server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;
+  {{else}}server 127.0.0.1:65535; # force a 502{{end}}
+}
+```
+
 Example Playbook
 ----------------
 
