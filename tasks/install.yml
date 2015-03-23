@@ -54,3 +54,9 @@
     src=consul-template.cfg.j2
     dest={{ consul_template_home }}/config/{{ consul_template_config_file }}
     mode=0755
+
+- name: consul-template log rotation
+  template: > 
+    src=consul-template.logrotate.j2
+    dest=/etc/logrotate.d/consul-template
+    mode=0644
