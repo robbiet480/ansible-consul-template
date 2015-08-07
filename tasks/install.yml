@@ -25,7 +25,7 @@
   get_url:
     url: "{{ consul_template_download_url }}"
     dest: "/tmp"
-  when: ansible_version.major === 1
+  when: ansible_version.major == "1"
 
 - name: unzip the downloaded package
   unarchive:
@@ -35,7 +35,7 @@
     owner: "root"
     group: "root"
     creates: "/tmp/{{ consul_template_release }}/{{ consul_template_binary }}"
-  when: ansible_version.major === 1
+  when: ansible_version.major == "1"
 
 - name: download consul-template binary and unzip the downloaded package
   unarchive:
@@ -45,7 +45,7 @@
     owner: "root"
     group: "root"
     creates: "/tmp/{{ consul_template_release }}/{{ consul_template_binary }}"
-  when: ansible_version.major === 2
+  when: ansible_version.major == "2"
 
 - name: copy consul-template binary into place
   command: mv /tmp/{{ consul_template_release }}/{{ consul_template_binary }} {{ consul_template_home }}/bin/{{ consul_template_binary }} creates={{ consul_template_home }}/bin/{{ consul_template_binary }} removes=/tmp/{{ consul_template_release }}/{{ consul_template_binary }}
